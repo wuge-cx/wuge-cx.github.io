@@ -1,0 +1,83 @@
+---
+import { Icon } from 'astro-pure/user'
+import { homePath, pagePath, profile, sections, text, type Locale, type SectionId } from '../../data/profile'
+
+interface Props { locale: Locale; activeSection?: SectionId }
+const { locale, activeSection } = Astro.props
+const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh'
+---
+
+<profile-navigation class='profile-header'>
+  <a class='brand' href={homePath(locale)}>{text(profile.siteTitle, locale)}</a>
+  <nav id='profile-navigation' class='section-nav' aria-label={locale === 'zh' ? '主导航' : 'Main navigation'}>
+    {sections.map((section) => (
+      <a href={pagePath(locale, section.id)} aria-current={section.id === activeSection ? 'page' : undefined}>{text(section.label, locale)}</a>
+    ))}
+  </nav>
+  <div class='header-actions'>
+    <a class='language-link' href={pagePath(otherLocale, activeSection)}
+      lang={otherLocale === 'zh' ? 'zh-CN' : 'en'} hreflang={otherLocale === 'zh' ? 'zh-CN' : 'en'}
+      aria-label={locale === 'zh' ? 'Switch to English' : '切换到中文版'}
+    >{locale === 'zh' ? 'EN' : '中文'}</a>
+    <button class='icon-button theme-button' type='button' aria-label={locale === 'zh' ? '切换明暗模式' : 'Toggle color theme'}>
+      <span class='theme-light'><Icon name='moon' class='size-4' /></span>
+      <span class='theme-dark'><Icon name='sun' class='size-4' /></span>
+    </button>
+    <button class='icon-button menu-button' type='button' aria-controls='profile-navigation' aria-expanded='false' aria-label={locale === 'zh' ? '打开导航菜单' : 'Open navigation menu'}>
+      <Icon name='menu' class='size-5' />
+    </button>
+  </div>
+</profile-navigation>
+
+<script>
+  class ProfileNavigation extends HTMLElement {
+    connectedCallback() {
+      const menuButton = this.querySelector<HTMLButtonElement>('.menu-button')
+      const navigation = this.querySelector<HTMLElement>('.section-nav')
+      const closeMenu = () => {
+        navigation?.classList.remove('is-open')
+        menuButton?.setAttribute('aria-expanded', 'false')
+      }
+      menuButton?.addEventListener('click', () => {
+        const open = navigation?.classList.toggle('is-open') ?? false
+        menuButton.setAttribute('aria-expanded', String(open))
+      })
+      navigation?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu))
+      this.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          closeMenu()
+          menuButton?.focus()
+        }
+      })
+      this.querySelector('.theme-button')?.addEventListener('click', () => {
+        const dark = document.documentElement.classList.toggle('dark')
+        localStorage.setItem('theme', dark ? 'dark' : 'light')
+      })
+    }
+  }
+  if (!customElements.get('profile-navigation')) customElements.define('profile-navigation', ProfileNavigation)
+</script>
+
+<style>
+  .profile-header { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 1.5rem; min-height: 5.5rem; background: hsl(var(--background) / 0.97); backdrop-filter: blur(12px); }
+  .brand { flex-shrink: 0; font-size: 1.125rem; font-weight: 600; letter-spacing: 0.015em; }
+  .section-nav { display: flex; align-items: center; gap: 1.4rem; margin-left: auto; }
+  .section-nav a { padding-block: 0.75rem; font-size: 0.9rem; white-space: nowrap; }
+  .section-nav a[aria-current='page'] { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 0.5rem; text-decoration-thickness: 2px; }
+  .header-actions { display: flex; align-items: center; gap: 0.75rem; flex-shrink: 0; }
+  .language-link { display: grid; place-items: center; min-width: 2.5rem; min-height: 2.5rem; font-size: 0.85rem; font-weight: 600; }
+  .icon-button { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border: 1px solid hsl(var(--border)); border-radius: 0.6rem; cursor: pointer; }
+  .icon-button:hover { background: hsl(var(--muted)); }
+  .theme-dark, .menu-button { display: none; }
+  :global(.dark) .theme-dark { display: block; }
+  :global(.dark) .theme-light { display: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
+  @media (max-width: 900px) {
+    .profile-header { min-height: 4.75rem; justify-content: space-between; gap: 0.75rem; }
+    .section-nav { display: none; position: absolute; top: calc(100% - 0.25rem); left: 0; right: 0; padding: 0.5rem 1.25rem; border: 1px solid hsl(var(--border)); border-radius: 1rem; background: hsl(var(--background)); box-shadow: 0 12px 28px hsl(var(--foreground) / 0.06); }
+    .section-nav.is-open { display: grid; gap: 0; }
+    .section-nav a { padding-block: 0.85rem; }
+    .menu-button { display: grid; }
+    .header-actions { gap: 0.5rem; }
+  }
+</style>

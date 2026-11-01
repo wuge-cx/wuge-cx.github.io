@@ -1,0 +1,54 @@
+---
+import { ThemeProvider } from 'astro-pure/components/basic'
+import BaseHead from '@/components/BaseHead.astro'
+import ProfileHeader from '@/components/profile/ProfileHeader.astro'
+import { pagePath, profile, sections, text, type Locale, type SectionId } from '../data/profile'
+import '@/assets/styles/global.css'
+import '@/assets/styles/app.css'
+
+interface Props { locale: Locale; section?: SectionId }
+const { locale, section } = Astro.props
+const language = locale === 'zh' ? 'zh-CN' : 'en'
+const currentSection = sections.find((item) => item.id === section)
+const title = currentSection ? text(currentSection.label, locale) : text(profile.name, locale)
+const description = currentSection ? text(currentSection.summary, locale) : text(profile.description, locale)
+---
+
+<html lang={language}>
+  <head>
+    <BaseHead {title} {description}
+      siteName={text(profile.siteTitle, locale)} authorName={text(profile.name, locale)}
+      localeCode={locale === 'zh' ? 'zh_CN' : 'en_US'} />
+    <link rel='alternate' hreflang='zh-CN' href={new URL(pagePath('zh', section), Astro.site)} />
+    <link rel='alternate' hreflang='en' href={new URL(pagePath('en', section), Astro.site)} />
+    <link rel='alternate' hreflang='x-default' href={new URL(pagePath('zh', section), Astro.site)} />
+    <script is:inline>
+      if (!localStorage.getItem('theme')) localStorage.setItem('theme', 'light')
+    </script>
+    <ThemeProvider />
+  </head>
+  <body id='top' class='bg-background text-foreground'>
+    <a class='skip-link' href='#main-content'>{locale === 'zh' ? '跳转到正文' : 'Skip to content'}</a>
+    <div class='profile-shell'>
+      <ProfileHeader {locale} activeSection={section} />
+      <slot />
+      <footer class='profile-footer'>
+        <span>© {new Date().getFullYear()} {text(profile.name, locale)}</span>
+        <a href='#top'>{locale === 'zh' ? '回到顶部 ↑' : 'Back to top ↑'}</a>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style>
+  :global(html) { scroll-behavior: smooth; }
+  :global(body) { margin: 0; font-family: var(--font-satoshi), 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+  .profile-shell { display: flex; flex-direction: column; max-width: 70rem; min-height: 100dvh; margin-inline: auto; padding-inline: 2.5rem; }
+  .profile-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: auto; padding: 1.5rem 0 2rem; border-top: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground)); font-size: 0.85rem; }
+  .skip-link { position: absolute; left: 1rem; top: -5rem; z-index: 100; padding: 0.75rem 1rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; background: hsl(var(--background)); }
+  .skip-link:focus { top: 0.5rem; }
+  @media (max-width: 640px) {
+    .profile-shell { padding-inline: 1.25rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { :global(html) { scroll-behavior: auto; } }
+</style>
