@@ -15,7 +15,6 @@
     // Paths
     "paths": {
       "@/assets/*": ["./src/assets/*"],
-      "@/data/*": ["./src/data/*"],
       "@/public/*": ["./public/*"],
       "@/components/*": ["./src/components/*"],
       "@/layouts/*": ["./src/layouts/*"],

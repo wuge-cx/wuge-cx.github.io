@@ -3,7 +3,6 @@ import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
 import ProfileLayout from '@/layouts/ProfileLayout.astro'
 import ProfileHero from './ProfileHero.astro'
-import ProjectCard from './ProjectCard.astro'
 import ustcCampus from '../../assets/education/ustc-east-gate.jpg'
 import uscCampus from '../../assets/education/usc-yumu-gate.jpg'
 import { homePath, profile, sections, text, type Locale, type SectionId } from '../../data/profile'
@@ -83,7 +82,25 @@ const emptyMessage = section === 'internships'
         </>}
 
         {section === 'projects' && <div class='entry-list'>
-          {profile.projects.map((entry, index) => <ProjectCard {locale} project={entry} {index} />)}
+          {profile.projects.map((entry) => <article class='project-entry' id={entry.id}>
+            <div class='entry-heading'>
+              <h2>{text(entry.title, locale)}</h2>
+              <span class='entry-date'>{text(entry.dates, locale)}</span>
+            </div>
+            <p class='entry-subtitle'>{text(entry.role, locale)}</p>
+            <h3 class='detail-title'>{locale === 'zh' ? '项目背景' : 'Project background'}</h3>
+            <p class='entry-description'>{text(entry.description, locale)}</p>
+            <h3 class='detail-title'>{locale === 'zh' ? '工作内容' : 'Work and contributions'}</h3>
+            <ol class='project-highlights'>
+              {entry.highlights.map((highlight) => <li>
+                <strong>{text(highlight.title, locale)}</strong>
+                <p>{text(highlight.description, locale)}</p>
+              </li>)}
+            </ol>
+            {entry.links.length > 0 && <div class='resource-links'>
+              {entry.links.map((link) => <a href={link.href}>{text(link.label, locale)} ↗</a>)}
+            </div>}
+          </article>)}
         </div>}
 
         {section === 'internships' && <div class='entry-list'>
@@ -130,7 +147,7 @@ const emptyMessage = section === 'internships'
   .page-content { min-width: 0; }
   .page-heading { margin-bottom: 3rem; }
   h1 { font-size: 2rem; line-height: 1.4; font-weight: 500; letter-spacing: -0.02em; }
-  .page-heading p { margin-top: 1.25rem; color: hsl(var(--muted-foreground)); line-height: 1.85; white-space: pre-line; }
+  .page-heading p { margin-top: 1.75rem; color: hsl(var(--muted-foreground)); line-height: 1.85; }
   .introduction { margin-top: 2rem; color: hsl(var(--muted-foreground)); line-height: 1.9; white-space: pre-line; }
   article, .biography, .skills-section { scroll-margin-top: 7rem; }
   .motto { margin-top: 1.5rem; padding-left: 1rem; border-left: 2px solid hsl(var(--primary) / 0.4); color: hsl(var(--muted-foreground)); font-style: italic; line-height: 1.8; }

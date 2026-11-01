@@ -1,6 +1,5 @@
 ---
 import { profile, text, type Locale } from '../../data/profile'
-import ProfileActions from './ProfileActions.astro'
 
 interface Props { locale: Locale; headingLevel?: 'h1' | 'h2' }
 const { locale, headingLevel = 'h1' } = Astro.props
@@ -11,9 +10,7 @@ const Heading = headingLevel
   <div class='hero-copy'>
     {profile.isDraft && <p class='draft-label'>{locale === 'zh' ? '个人资料待补充' : 'Profile details to be added'}</p>}
     <Heading class='name'>{text(profile.name, locale)}</Heading>
-    <p class='affiliation'>{text(profile.affiliation, locale)}</p>
     <p class='headline'>{text(profile.headline, locale)}</p>
-    <ProfileActions {locale} />
     {profile.contacts.length > 0 && <div class='resource-links'>
       {profile.contacts.map((link) => <a href={link.href}>{text(link.label, locale)} ↗</a>)}
     </div>}
@@ -26,9 +23,7 @@ const Heading = headingLevel
   .draft-label { margin-bottom: 0.65rem; color: hsl(var(--muted-foreground)); font-size: 0.75rem; letter-spacing: 0.04em; }
   .name { font-size: clamp(2.5rem, 4.5vw, 3.5rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.035em; overflow-wrap: anywhere; }
   h2.name { font-size: clamp(2rem, 4vw, 2.75rem); }
-  .affiliation { margin-top: 1.1rem; font-size: 0.95rem; line-height: 1.8; color: hsl(var(--foreground)); }
-  .headline { margin-top: 0.45rem; color: hsl(var(--primary)); font-size: 0.9rem; line-height: 1.6; }
-  .resource-links { display: flex; flex-wrap: wrap; gap: 0.65rem 1.25rem; margin-top: 1rem; font-size: 0.75rem; }
-  .resource-links a { color: hsl(var(--muted-foreground)); text-underline-offset: 0.25rem; }
-  .resource-links a:hover { text-decoration: underline; }
+  .headline { margin-top: 1rem; color: hsl(var(--muted-foreground)); font-size: 1rem; line-height: 1.6; }
+  .resource-links { display: flex; flex-wrap: wrap; gap: 0.65rem 1.25rem; margin-top: 1.25rem; font-size: 0.85rem; }
+  .resource-links a { color: hsl(var(--primary)); text-decoration: underline; text-underline-offset: 0.25rem; }
 </style>

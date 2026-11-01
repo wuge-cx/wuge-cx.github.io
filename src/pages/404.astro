@@ -1,27 +1,18 @@
 ---
-import ProfileLayout from '@/layouts/ProfileLayout.astro'
-import { pagePath } from '@/data/profile'
+import { Button } from 'astro-pure/user'
+import PageLayout from '@/layouts/BaseLayout.astro'
+
+const meta = {
+  description: 'Not found',
+  title: '404'
+}
 ---
 
-<ProfileLayout locale='zh' pageTitle='页面未找到 · Page not found' pageDescription='陈曦的个人主页：此页面不存在，请返回首页或浏览项目经历。' noindex>
-  <main id='main-content'>
-    <p class='error-code' aria-hidden='true'>404</p>
-    <h1>这个页面暂时找不到了</h1>
-    <p lang='en'>This page could not be found.</p>
-    <div class='recovery-links'>
-      <a href='/'>返回首页</a>
-      <a href='/en/' lang='en'>English home</a>
-      <a href={pagePath('zh', 'projects')}>浏览项目 →</a>
-    </div>
-  </main>
-</ProfileLayout>
-
-<style>
-  main { padding-block: 5rem 7rem; text-align: center; }
-  .error-code { font-size: clamp(5rem, 15vw, 8rem); line-height: 1.2; color: hsl(var(--primary) / 0.55); font-weight: 500; letter-spacing: -0.06em; }
-  h1 { margin-top: 1rem; font-size: 1.6rem; line-height: 1.5; }
-  h1 + p { margin-top: 0.8rem; color: hsl(var(--muted-foreground)); }
-  .recovery-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
-  .recovery-links a { padding: 0.7rem 1rem; border: 1px solid hsl(var(--border)); border-radius: 0.6rem; font-size: 0.85rem; color: hsl(var(--primary)); }
-  .recovery-links a:hover { background: hsl(var(--muted)); }
-</style>
+<PageLayout {meta}>
+  <div class='px-4 py-10 text-center sm:px-6 lg:px-8'>
+    <h1 class='block text-7xl font-bold sm:text-9xl'>404</h1>
+    <p class='mt-3 text-muted-foreground'>Oops, something went wrong.</p>
+    <p class='text-lg'>Sorry, we couldn't find your page.</p>
+    <Button title='Back to home' href='/' variant='ahead' class='mt-5' />
+  </div>
+</PageLayout>

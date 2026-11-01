@@ -1,22 +1,21 @@
 import type { CardListData, Config, IntegrationUserConfig, ThemeUserConfig } from 'astro-pure/types'
-import { profile, visibleSections, pagePath } from './data/profile'
 
 export const theme: ThemeUserConfig = {
   // [Basic]
   /** Title for your website. Will be used in metadata and as browser tab title. */
-  title: profile.siteTitle.zh,
+  title: 'Astro Theme Pure',
   /** Will be used in index page & copyright declaration */
-  author: profile.name.zh,
+  author: 'Pure Lab',
   /** Description metadata for your website. Can be used in page metadata. */
-  description: profile.description.zh,
+  description: 'Stay hungry, stay foolish',
   /** The default favicon for your site which should be a path to an image in the `public/` directory. */
-  favicon: '/favicon/favicon.svg',
+  favicon: '/favicon/favicon.ico',
   /** The default social card image for your site which should be a path to an image in the `public/` directory. */
   socialCard: '/images/social-card.png',
   /** Specify the default language for this site. */
   locale: {
-    lang: 'zh-CN',
-    attrs: 'zh_CN',
+    lang: 'en-US',
+    attrs: 'en_US',
     // Date locale
     dateLocale: 'en-US',
     dateOptions: {
@@ -27,8 +26,8 @@ export const theme: ThemeUserConfig = {
   },
   /** Set a logo image to show in the homepage. */
   logo: {
-    src: '/public/favicon/favicon.svg',
-    alt: 'Xi Chen'
+    src: '/src/assets/avatar.png',
+    alt: 'Avatar'
   },
 
   titleDelimiter: '•',
@@ -48,7 +47,13 @@ export const theme: ThemeUserConfig = {
 
   /** Configure the header of your site. */
   header: {
-    menu: visibleSections.map((section) => ({ title: section.label.zh, link: pagePath('zh', section.id) }))
+    menu: [
+      { title: 'Blog', link: '/blog' },
+      { title: 'Docs', link: '/docs' },
+      { title: 'Projects', link: '/projects' },
+      { title: 'Links', link: '/links' },
+      { title: 'About', link: '/about' }
+    ]
   },
 
   /** Configure the footer of your site. */
@@ -56,12 +61,26 @@ export const theme: ThemeUserConfig = {
     // Year format
     year: `© ${new Date().getFullYear()}`,
     // year: `© 2019 - ${new Date().getFullYear()}`,
-    links: [],
+    links: [
+      // Registration link
+      {
+        title: 'Moe ICP 114514',
+        link: 'https://icp.gov.moe/?keyword=114514',
+        style: 'text-sm' // Uno/TW CSS class
+      },
+      // Privacy Policy link
+      {
+        title: 'Site Policy',
+        link: '/terms',
+        pos: 2 // position set to 2 will be appended to copyright line
+      }
+    ],
     /** Enable displaying a “Astro & Pure theme powered” link in your site’s footer. */
     credits: true,
     /** Optional details about the social media accounts for this site. */
     social: [
-      { icon: 'github', label: 'GitHub', href: profile.github }
+      { icon: 'github', label: 'GitHub', href: 'https://github.com/cworld1/astro-theme-pure' },
+      { icon: 'rss', label: 'RSS', href: '/rss.xml' }
     ]
   },
 
@@ -88,19 +107,25 @@ export const integ: IntegrationUserConfig = {
   // https://astro-pure.js.org/docs/integrations/links
   links: {
     // Friend logbook
-    logbook: [],
+    logbook: [
+      { date: '2025-03-16', content: 'Is there a leakage?' },
+      { date: '2025-03-16', content: 'A leakage of what?' },
+      { date: '2025-03-16', content: 'I have a full seat of water, like, full of water!' },
+      { date: '2025-03-16', content: 'Must be the water.' },
+      { date: '2025-03-16', content: "Let's add that to the words of wisdom." }
+    ],
     // Yourself link info
     applyTip: [
       { name: 'Name', val: theme.title },
       { name: 'Desc', val: theme.description || 'Null' },
-      { name: 'Link', val: 'https://wuge-cx.github.io/' },
-      { name: 'Avatar', val: 'https://wuge-cx.github.io/favicon/favicon.svg' }
+      { name: 'Link', val: 'https://astro-pure.js.org/' },
+      { name: 'Avatar', val: 'https://astro-pure.js.org/favicon/favicon.ico' }
     ],
     // Cache avatars in `public/avatars/` to improve user experience.
     cacheAvatar: false
   },
   // [Search]
-  pagefind: false,
+  pagefind: true,
   // Add a random quote to the footer (default on homepage footer)
   // See: https://astro-pure.js.org/docs/integrations/advanced#web-content-render
   // [Quote]
@@ -138,9 +163,9 @@ export const integ: IntegrationUserConfig = {
   },
   // Comment system
   waline: {
-    enable: false,
+    enable: true,
     // Server service link
-    server: '',
+    server: 'https://astro-theme-pure-waline.arthals.ink/',
     // Show meta info for comments
     showMeta: false,
     // Refer https://waline.js.org/en/guide/features/emoji.html

@@ -1,6 +1,7 @@
 ---
 import { Font } from 'astro:assets'
 
+import { prod } from 'astro-pure/server'
 import type { SiteMeta } from 'astro-pure/types'
 import config from 'virtual:config'
 
@@ -8,17 +9,16 @@ type Props = SiteMeta & {
   siteName?: string
   authorName?: string
   localeCode?: string
-  noindex?: boolean
 }
 
 const {
   articleDate, description, ogImage, title,
-  siteName = config.title, authorName = config.author, localeCode = config.locale.attrs, noindex = false
+  siteName = config.title, authorName = config.author, localeCode = config.locale.attrs
 } = Astro.props
 
-const siteTitle = title === siteName ? siteName : `${title} ${config.titleDelimiter} ${siteName}`
+const siteTitle = `${title} ${config.titleDelimiter} ${siteName}`
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
-const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site).href
+const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.url).href
 ---
 
 <meta charset='utf-8' />
@@ -52,7 +52,6 @@ const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site
 <meta content={siteTitle} name='title' />
 <meta content={description} name='description' />
 <meta content={authorName} name='author' />
-{noindex && <meta name='robots' content='noindex, follow' />}
 
 {/* Theme Color */}
 {/* <meta content='' name='theme-color' /> */}
@@ -66,7 +65,6 @@ const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site
 <meta content={siteName} property='og:site_name' />
 <meta content={localeCode} property='og:locale' />
 <meta content={socialImageURL} property='og:image' />
-<meta content='Xi Chen — LLM Post-training & Terminal Agents' property='og:image:alt' />
 <meta content='1200' property='og:image:width' />
 <meta content='630' property='og:image:height' />
 {
@@ -88,4 +86,23 @@ const socialImageURL = new URL(ogImage ? ogImage : config.socialCard, Astro.site
 {/* Sitemap */}
 <link href='/sitemap-index.xml' rel='sitemap' />
 
+{/* RSS auto-discovery */}
+<link
+  rel='alternate'
+  type='application/rss+xml'
+  title={config.title}
+  href={`${Astro.site}rss.xml`}
+/>
+
 <meta content={Astro.generator} name='generator' />
+
+{
+  /* User script*/
+  prod && (
+    <script>
+      console.log( '%c Astro Theme Pure %c https://github.com/cworld1/astro-theme-pure/',
+      'color:#fff;background:linear-gradient(90deg,#448bff,#44e9ff);padding:5px 0;',
+      'color:#000;background:linear-gradient(90deg,#44e9ff,#ffffff);padding:5px 10px 5px 0px;' )
+    </script>
+  )
+}
