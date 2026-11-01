@@ -48,8 +48,8 @@ export const profile = {
     en: 'I am a master’s student in Control Engineering at the University of Science and Technology of China. My work focuses on LLM post-training and terminal agents, including task synthesis, SFT/GRPO, distributed training, and evaluation.'
   },
   introduction: {
-    zh: '我是陈曦，目前就读于中国科学技术大学控制工程硕士项目，本科毕业于南华大学建筑电气与智能化专业。\n\n我关注大模型后训练与终端 Agent，项目实践涵盖训练任务的反向合成与质量筛查、SFT 冷启动、PPO/GRPO 训练、远程沙箱执行，以及双节点训练和评测。在相关项目中，我负责会话反向重建、质量筛查、冷启动数据构建与远程沙箱执行后端，并参与合成流水线、执行验证、训练配置与评测。',
-    en: 'I am Xi Chen, a master’s student in Control Engineering at the University of Science and Technology of China. I completed my undergraduate studies in Building Electrical Engineering and Intelligent Systems at the University of South China.\n\nMy interests center on LLM post-training and terminal agents. My project experience covers reverse task synthesis and quality screening, SFT cold starts, PPO/GRPO training, remote sandbox execution, and two-node training and evaluation. I have been responsible for session reconstruction, quality screening, cold-start data construction, and the remote sandbox backend, while contributing to synthesis pipelines, execution validation, training configuration, and evaluation.'
+    zh: '我是陈曦，目前就读于中国科学技术大学，控制工程硕士在读。\n\n我关注大模型后训练与终端 Agent，项目实践涵盖训练任务的反向合成与质量筛查、SFT 冷启动、PPO/GRPO 训练、远程沙箱执行，以及双节点训练和评测。在相关项目中，我负责会话反向重建、质量筛查、冷启动数据构建与远程沙箱执行后端，并参与合成流水线、执行验证、训练配置与评测。',
+    en: 'I am Xi Chen, currently pursuing a master’s degree in Control Engineering at the University of Science and Technology of China.\n\nMy interests center on LLM post-training and terminal agents. My project experience covers reverse task synthesis and quality screening, SFT cold starts, PPO/GRPO training, remote sandbox execution, and two-node training and evaluation. I have been responsible for session reconstruction, quality screening, cold-start data construction, and the remote sandbox backend, while contributing to synthesis pipelines, execution validation, training configuration, and evaluation.'
   },
   motto: 'Be the change that you want to see in the world.',
   isDraft: false,
