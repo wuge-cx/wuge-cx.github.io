@@ -1,0 +1,42 @@
+---
+import { projectPath, text, type Locale, type Project } from '../../data/profile'
+interface Props { locale: Locale; project: Project; index: number }
+const { locale, project, index } = Astro.props
+const href = projectPath(locale, project.slug)
+---
+
+<article class='project-card' id={project.id}>
+  <div class='card-meta'><span>PROJECT {String(index + 1).padStart(2, '0')}</span><span>{text(project.dates, locale)}</span></div>
+  <h2><a href={href}>{text(project.title, locale)}</a></h2>
+  <p class='summary'>{text(project.summary, locale)}</p>
+  <p class='role'><span>{locale === 'zh' ? '我的职责' : 'My role'}</span>{text(project.role, locale)}</p>
+  <ul class='stack' aria-label={locale === 'zh' ? '技术与方法' : 'Tools and methods'}>
+    {project.stack.map((item) => <li>{item}</li>)}
+  </ul>
+  <dl class='results'>
+    {project.metrics.slice(project.slug === 'task-synthesis' ? 1 : 0, project.slug === 'task-synthesis' ? 3 : 2).map((metric) => <div>
+      <dt>{text(metric.label, locale)}</dt><dd>{metric.value}</dd>
+    </div>)}
+  </dl>
+  <a class='detail-link' href={href}>{locale === 'zh' ? '查看项目详情' : 'Explore this project'} <span aria-hidden='true'>→</span></a>
+</article>
+
+<style>
+  .project-card { padding: 1.8rem; border: 1px solid hsl(var(--border)); border-radius: 1.15rem; background: linear-gradient(140deg, hsl(var(--background)) 45%, hsl(var(--primary) / 0.045)); scroll-margin-top: 7rem; }
+  .card-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1rem; font-size: 0.7rem; color: hsl(var(--muted-foreground)); }
+  .card-meta > span:first-child { font-family: ui-monospace, monospace; color: hsl(var(--primary)); letter-spacing: 0.08em; }
+  h2 { margin-top: 1rem; font-size: 1.25rem; font-weight: 600; line-height: 1.65; text-wrap: pretty; }
+  h2 a:hover { color: hsl(var(--primary)); }
+  .summary { margin-top: 0.7rem; font-size: 0.92rem; line-height: 1.9; color: hsl(var(--muted-foreground)); }
+  .role { margin-top: 1rem; font-size: 0.82rem; line-height: 1.85; color: hsl(var(--muted-foreground)); }
+  .role > span { display: block; margin-bottom: 0.2rem; color: hsl(var(--foreground)); font-size: 0.75rem; font-weight: 500; }
+  .stack { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+  .stack li { padding: 0.25rem 0.5rem; border: 1px solid hsl(var(--border)); border-radius: 0.4rem; font-size: 0.7rem; color: hsl(var(--muted-foreground)); }
+  .results { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.4rem; padding-top: 1.2rem; border-top: 1px solid hsl(var(--border)); }
+  dt { font-size: 0.73rem; color: hsl(var(--muted-foreground)); }
+  dd { margin-top: 0.4rem; font-size: clamp(1rem, 2.1vw, 1.3rem); color: hsl(var(--primary)); font-weight: 500; font-variant-numeric: tabular-nums; }
+  .detail-link { display: inline-flex; align-items: center; gap: 1.3rem; margin-top: 1.4rem; padding-block: 0.35rem; color: hsl(var(--primary)); font-size: 0.85rem; }
+  .detail-link:hover { text-decoration: underline; text-underline-offset: 0.3em; }
+  @media (max-width: 640px) { .project-card { padding: 1.25rem; } h2 { font-size: 1.1rem; } }
+  @media (max-width: 360px) { .results { grid-template-columns: 1fr; } }
+</style>

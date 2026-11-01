@@ -1,0 +1,9 @@
+---
+import type { GetStaticPaths } from 'astro'
+import ProfilePage from '@/components/profile/ProfilePage.astro'
+import { visibleSections, type SectionId } from '@/data/profile'
+export const getStaticPaths = (() => visibleSections.map(({ id }) => ({ params: { section: id }, props: { section: id } }))) satisfies GetStaticPaths
+interface Props { section: SectionId }
+const { section } = Astro.props
+---
+<ProfilePage locale='en' {section} />

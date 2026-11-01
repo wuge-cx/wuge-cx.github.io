@@ -1,19 +1,21 @@
 export type Locale = 'zh' | 'en'
 export type LocalizedText = Record<Locale, string>
 export const text = (value: LocalizedText, locale: Locale) => value[locale]
-export const homePath = (locale: Locale) => (locale === 'zh' ? '/' : '/en')
+export const homePath = (locale: Locale) => (locale === 'zh' ? '/' : '/en/')
 
 export const sections = [
-  { id: 'about', label: { zh: '自我介绍', en: 'Introduction' }, summary: { zh: '个人背景、研究兴趣与未来方向。', en: 'Background, research interests, and future goals.' } },
-  { id: 'education', label: { zh: '教育背景', en: 'Education' }, summary: { zh: '学习经历、专业方向与学术训练。', en: 'Studies, fields of specialization, and academic training.' } },
-  { id: 'projects', label: { zh: '项目经历', en: 'Projects' }, summary: { zh: '参与的项目、承担的工作与主要成果。', en: 'Projects, responsibilities, and key outcomes.' } },
+  { id: 'about', label: { zh: '自我介绍', en: 'Introduction' }, summary: { zh: '大模型后训练与终端 Agent：我的研究兴趣、技术实践与专业技能。', en: 'My interests, technical experience, and skills in LLM post-training and terminal agents.' } },
+  { id: 'education', label: { zh: '教育背景', en: 'Education' }, summary: { zh: '中国科学技术大学 · 控制工程硕士\n南华大学 · 建筑电气与智能化本科', en: 'Master’s studies at USTC · Control Engineering\nUndergraduate studies at the University of South China' } },
+  { id: 'projects', label: { zh: '项目经历', en: 'Projects' }, summary: { zh: '从任务合成与质量筛查，到终端 Agent 的 SFT 冷启动与双节点 GRPO 训练。', en: 'From task synthesis and quality screening to SFT cold starts and two-node GRPO training for terminal agents.' } },
   { id: 'internships', label: { zh: '实习经历', en: 'Internships' }, summary: { zh: '实习岗位、工作实践与收获。', en: 'Internship roles, professional experience, and takeaways.' } },
   { id: 'publications', label: { zh: '科研论文', en: 'Publications' }, summary: { zh: '学术论文、研究成果与相关资料。', en: 'Publications, research contributions, and related resources.' } }
 ] as const satisfies ReadonlyArray<{ id: string; label: LocalizedText; summary: LocalizedText }>
 
 export type SectionId = (typeof sections)[number]['id']
 export const pagePath = (locale: Locale, section?: SectionId) =>
-  section ? `${locale === 'zh' ? '' : '/en'}/${section}` : homePath(locale)
+  section ? `${locale === 'zh' ? '' : '/en'}/${section}/` : homePath(locale)
+
+export const projectPath = (locale: Locale, slug: string) => `${pagePath(locale, 'projects')}${slug}/`
 
 type ResourceLink = { label: LocalizedText; href: string }
 type InternshipEntry = {
@@ -39,6 +41,10 @@ export const profile = {
   siteTitle: { zh: '陈曦的个人主页', en: 'Xi Chen' },
   name: { zh: '陈曦', en: 'Xi Chen' },
   headline: { zh: '大模型 · 后训练', en: 'Large Language Models · Post-training' },
+  affiliation: { zh: '中国科学技术大学 · 控制工程硕士在读', en: 'Master’s student in Control Engineering · USTC' },
+  github: 'https://github.com/wuge-cx',
+  resume: '/files/xi-chen-resume-zh.pdf',
+  researchAreas: ['LLM Post-training', 'Terminal Agents', 'SFT / GRPO'],
   description: {
     zh: '陈曦，中国科学技术大学控制工程硕士在读，关注大模型后训练与终端 Agent。',
     en: 'Xi Chen, a master’s student in Control Engineering at the University of Science and Technology of China, focusing on LLM post-training and terminal agents.'
@@ -118,6 +124,24 @@ export const profile = {
   projects: [
     {
       id: 'project-task-synthesis',
+      slug: 'task-synthesis',
+      summary: {
+        zh: '从真实会话与文本种子出发，构建可执行、可校验的终端任务，为 Agent 后训练提供数据。',
+        en: 'Build executable, verifiable terminal tasks from real sessions and text seeds to support agent post-training.'
+      },
+      stack: ['Python', 'Docker', 'Task Synthesis', 'Execution Validation'],
+      metrics: [
+        { value: '9,820', label: { zh: '累计落盘任务', en: 'Stored tasks' }, note: { zh: '两条任务生成线，经质量筛查与执行验证', en: 'Across both generation tracks after screening and execution validation' } },
+        { value: '7,200', label: { zh: '可解训练任务', en: 'Solvable training tasks' }, note: { zh: '参考解回放通过，且独立模型至少解出一次', en: 'Passed reference-solution replay and solved at least once by an independent model' } },
+        { value: '29.3% → 32.6%', label: { zh: 'Held-out 通过率', en: 'Held-out pass rate' }, note: { zh: '同一冷启动 checkpoint、同预算 GRPO；完整任务池对比未经筛查的种子线任务池', en: 'Same cold-start checkpoint and GRPO budget; complete pool versus the unscreened seed-track pool' } }
+      ],
+      workflow: [
+        { title: { zh: '任务来源', en: 'Task sources' }, description: { zh: '真实会话反向重建 / 文本种子合成', en: 'Session reconstruction / text-seed synthesis' } },
+        { title: { zh: '统一产物', en: 'Shared artifacts' }, description: { zh: '指令、参考解、测试与容器环境', en: 'Instructions, solutions, tests, and containers' } },
+        { title: { zh: '质量筛查', en: 'Quality screening' }, description: { zh: '答案暴露嗅探与无效测试扫描', en: 'Answer-leakage and invalid-test checks' } },
+        { title: { zh: '执行验证', en: 'Execution validation' }, description: { zh: '参考解回放、失败归因与容器重验', en: 'Oracle replay, failure attribution, and revalidation' } },
+        { title: { zh: '训练任务池', en: 'Training pool' }, description: { zh: '独立模型验证可解性，按难度分桶', en: 'Independent solvability checks and difficulty bucketing' } }
+      ],
       title: {
         zh: '终端 Agent 训练任务的反向合成与质量筛查',
         en: 'Reverse Synthesis and Quality Screening of Terminal-Agent Training Tasks'
@@ -172,6 +196,24 @@ export const profile = {
     },
     {
       id: 'project-agent-training',
+      slug: 'agent-training',
+      summary: {
+        zh: '围绕 Qwen3-8B，打通冷启动数据、远程沙箱、双节点训练与评测，让终端任务形成有效训练信号。',
+        en: 'Connect cold-start data, remote sandboxes, two-node training, and evaluation to train a Qwen3-8B terminal agent.'
+      },
+      stack: ['Qwen3-8B', 'verl', 'vLLM', 'GRPO', 'NCCL', 'Harbor'],
+      metrics: [
+        { value: '11.6% → 32.6%', label: { zh: 'Held-out 通过率', en: 'Held-out pass rate' }, note: { zh: '自建 held-out 集，138 题，avg@4', en: 'Self-built held-out set, 138 tasks, avg@4' } },
+        { value: '5.3% → 11.8%', label: { zh: 'Terminal-Bench 2.0', en: 'Terminal-Bench 2.0' }, note: { zh: 'avg@4，同一交互协议下的评测', en: 'avg@4, evaluated with a consistent interaction protocol' } },
+        { value: '1.9×', label: { zh: '双节点有效吞吐', en: 'Two-node throughput' }, note: { zh: '相对于单机训练', en: 'Relative to single-machine training' } }
+      ],
+      workflow: [
+        { title: { zh: '冷启动数据', en: 'Cold-start data' }, description: { zh: 'Teacher 轨迹拒绝采样，保留失败与修复段', en: 'Rejection-sampled teacher trajectories, including failure and repair' } },
+        { title: { zh: 'SFT 冷启动', en: 'SFT cold start' }, description: { zh: '建立解题基础，测量 reward 密度', en: 'Establish task-solving ability and measure reward density' } },
+        { title: { zh: '远程执行', en: 'Remote execution' }, description: { zh: '独立沙箱集群与异步调用桥接', en: 'A separate sandbox cluster with asynchronous call bridging' } },
+        { title: { zh: '双节点 GRPO', en: 'Two-node GRPO' }, description: { zh: '训练与推理分置，NCCL 同步权重', en: 'Separate training and inference with NCCL weight synchronization' } },
+        { title: { zh: '评测与归因', en: 'Evaluation' }, description: { zh: 'Held-out / Terminal-Bench 与错误分类', en: 'Held-out / Terminal-Bench evaluation and error classification' } }
+      ],
       title: {
         zh: '8B 终端 Agent 的 SFT 冷启动与双节点 GRPO 训练',
         en: 'SFT Cold Start and Two-Node GRPO Training for an 8B Terminal Agent'
@@ -228,3 +270,11 @@ export const profile = {
   internships: [] as InternshipEntry[],
   publications: [] as PublicationEntry[]
 }
+
+export type Project = (typeof profile.projects)[number]
+
+// Empty sections stay in the data model; adding an entry restores their routes and navigation.
+export const visibleSections = sections.filter((section) =>
+  section.id === 'internships' ? profile.internships.length > 0
+    : section.id === 'publications' ? profile.publications.length > 0 : true
+)

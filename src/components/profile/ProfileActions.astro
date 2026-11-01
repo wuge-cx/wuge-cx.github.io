@@ -1,0 +1,23 @@
+---
+import { profile, type Locale } from '../../data/profile'
+interface Props { locale: Locale }
+const { locale } = Astro.props
+---
+
+<div class='profile-actions'>
+  <a class='action-primary' href={profile.resume} download='Xi-Chen-CV-zh.pdf'>
+    <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' aria-hidden='true'><path d='M12 3v12m-4-4 4 4 4-4M4 16v4h16v-4' /></svg>
+    {locale === 'zh' ? '下载简历' : 'CV (Chinese PDF)'}
+  </a>
+  <a href={profile.github} target='_blank' rel='noopener noreferrer'>GitHub <span aria-hidden='true'>↗</span></a>
+  <a href={profile.contacts[0].href}>{locale === 'zh' ? '邮件联系' : 'Email me'} <span aria-hidden='true'>↗</span></a>
+</div>
+
+<style>
+  .profile-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.65rem; margin-top: 1.75rem; }
+  a { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.65rem; padding: 0.6rem 0.85rem; border: 1px solid hsl(var(--border)); border-radius: 0.65rem; font-size: 0.82rem; background: hsl(var(--background) / 0.8); transition: background-color 180ms ease, border-color 180ms ease; }
+  a:hover { border-color: hsl(var(--primary) / 0.5); background: hsl(var(--muted)); }
+  .action-primary { background: #365f73; border-color: #365f73; color: #fff; }
+  .action-primary:hover { background: #2b4e60; }
+  @media (prefers-reduced-motion: reduce) { a { transition: none; } }
+</style>

@@ -5,7 +5,7 @@ import ProfileHero from './ProfileHero.astro'
 import blocks from '../../content/blog/3d-rendering/thumbnail.jpg'
 import columns from '../../content/blog/improve-concentration/thumbnail.jpg'
 import waves from '../../content/blog/music-journey/thumbnail.jpg'
-import { pagePath, profile, sections, text, type Locale, type SectionId } from '../../data/profile'
+import { pagePath, profile, visibleSections, text, type Locale, type SectionId } from '../../data/profile'
 
 interface Props { locale: Locale }
 const { locale } = Astro.props
@@ -22,13 +22,21 @@ const cardArt = {
   <main id='main-content'>
     <section class='home-intro' aria-label={locale === 'zh' ? '个人简介' : 'Profile overview'}>
       <ProfileHero {locale} />
-      <p class='introduction'>{text(profile.summary, locale)}</p>
+      <div class='research-intro'>
+        <p class='eyebrow'>{locale === 'zh' ? '研究与实践' : 'RESEARCH & PRACTICE'}</p>
+        <h2>{locale === 'zh' ? '从任务构建，到 Agent 训练。' : 'From task design to agent training.'}</h2>
+        <p class='introduction'>{text(profile.summary, locale)}</p>
+        <ul class='research-tags' aria-label={locale === 'zh' ? '研究方向' : 'Research interests'}>
+          {profile.researchAreas.map((area) => <li>{area}</li>)}
+        </ul>
+      </div>
     </section>
+    <div class='section-heading'><h2>{locale === 'zh' ? '进一步了解' : 'Explore my work'}</h2><span>{locale === 'zh' ? '背景 · 经历 · 实践' : 'Background · Experience · Practice'}</span></div>
     <nav class='page-cards' aria-label={locale === 'zh' ? '浏览个人资料' : 'Explore my profile'}>
-      {sections.map((section, index) => <a class='page-card' data-tone={cardArt[section.id].tone}
+      {visibleSections.map((section, index) => <a class='page-card' data-tone={cardArt[section.id].tone}
         href={pagePath(locale, section.id)} style={{ '--art-position': cardArt[section.id].position }}>
         <div class='card-art' aria-hidden='true'>
-          <Image src={cardArt[section.id].image} alt='' width={960} height={540} format='webp' loading='eager' />
+          <Image src={cardArt[section.id].image} alt='' width={960} height={540} format='webp' loading='lazy' />
         </div>
         <div class='card-copy'>
           <span class='card-index' aria-hidden='true'>{String(index + 1).padStart(2, '0')}</span>
@@ -43,8 +51,16 @@ const cardArt = {
 
 <style>
   main { padding-block: 3.75rem 4.5rem; }
-  .home-intro { display: grid; grid-template-columns: minmax(15rem, 0.9fr) minmax(0, 1.1fr); gap: 4rem; align-items: center; margin-bottom: 3rem; }
-  .introduction { max-width: 40rem; color: hsl(var(--muted-foreground)); font-size: 0.95rem; line-height: 1.95; text-wrap: pretty; }
+  .home-intro { display: grid; grid-template-columns: minmax(15rem, 1fr) minmax(0, 1fr); gap: 4rem; align-items: center; margin-bottom: 3.5rem; }
+  .research-intro { padding: 1.8rem; border: 1px solid hsl(var(--border) / 0.7); border-radius: 1.15rem; background: linear-gradient(135deg, hsl(var(--primary) / 0.045), hsl(var(--background)) 65%); }
+  .eyebrow { font-size: 0.7rem; letter-spacing: 0.1em; color: hsl(var(--primary)); margin-bottom: 0.9rem; }
+  .research-intro h2 { font-size: 1.15rem; line-height: 1.65; font-weight: 500; text-wrap: balance; }
+  .introduction { margin-top: 0.75rem; color: hsl(var(--muted-foreground)); font-size: 0.9rem; line-height: 1.95; text-wrap: pretty; }
+  .research-tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.1rem; }
+  .research-tags li { padding: 0.3rem 0.55rem; border: 1px solid hsl(var(--border)); border-radius: 0.4rem; font-size: 0.68rem; color: hsl(var(--muted-foreground)); }
+  .section-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem; margin-bottom: 1.15rem; }
+  .section-heading h2 { font-size: 1rem; font-weight: 500; }
+  .section-heading span { color: hsl(var(--muted-foreground)); font-size: 0.75rem; }
   .page-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
   .page-card {
     --card-tint: 208 32% 92%;
@@ -59,7 +75,7 @@ const cardArt = {
   .page-card[data-tone='rose'] { --card-tint: 350 28% 92%; }
   .page-card[data-tone='lavender'] { --card-tint: 245 28% 93%; }
   .page-card[data-tone='sage'] { --card-tint: 168 20% 91%; }
-  .page-card:last-child { grid-column: 1 / -1; min-height: 10rem; }
+  .page-card:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 10rem; }
   .card-art {
     position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: var(--art-opacity);
     -webkit-mask-image: linear-gradient(90deg, transparent 18%, rgb(0 0 0 / 0.04) 35%, rgb(0 0 0 / 0.55) 65%, #000 100%);
@@ -71,7 +87,7 @@ const cardArt = {
   .card-copy { max-width: min(78%, 25rem); }
   .card-index { display: block; margin-bottom: 0.65rem; color: hsl(var(--primary)); font-family: ui-monospace, monospace; font-size: 0.7rem; letter-spacing: 0.12em; }
   .page-card h2 { font-size: 1.15rem; font-weight: 600; line-height: 1.5; }
-  .page-card p { margin-top: 0.5rem; color: hsl(var(--muted-foreground)); font-size: 0.9rem; line-height: 1.75; text-wrap: pretty; }
+  .page-card p { margin-top: 0.5rem; color: hsl(var(--muted-foreground)); font-size: 0.9rem; line-height: 1.75; text-wrap: pretty; white-space: pre-line; }
   .card-arrow { position: absolute; top: 1.35rem; right: 1.35rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid hsl(var(--border) / 0.8); border-radius: 50%; background: hsl(var(--background) / 0.78); color: hsl(var(--primary)); font-size: 1.2rem; transition: transform 220ms ease, background-color 220ms ease; }
   .page-card:focus-visible { outline: 2px solid hsl(var(--primary)); outline-offset: 4px; }
   .page-card:focus-visible .card-arrow { background: hsl(var(--background)); transform: translate(2px, -2px); }

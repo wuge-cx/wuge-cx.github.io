@@ -1,21 +1,21 @@
 ---
 import { Icon } from 'astro-pure/user'
-import { homePath, pagePath, profile, sections, text, type Locale, type SectionId } from '../../data/profile'
+import { homePath, pagePath, profile, visibleSections, text, type Locale, type SectionId } from '../../data/profile'
 
-interface Props { locale: Locale; activeSection?: SectionId }
-const { locale, activeSection } = Astro.props
+interface Props { locale: Locale; activeSection?: SectionId; alternatePath?: string }
+const { locale, activeSection, alternatePath } = Astro.props
 const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh'
 ---
 
 <profile-navigation class='profile-header'>
   <a class='brand' href={homePath(locale)}>{text(profile.siteTitle, locale)}</a>
   <nav id='profile-navigation' class='section-nav' aria-label={locale === 'zh' ? '主导航' : 'Main navigation'}>
-    {sections.map((section) => (
+    {visibleSections.map((section) => (
       <a href={pagePath(locale, section.id)} aria-current={section.id === activeSection ? 'page' : undefined}>{text(section.label, locale)}</a>
     ))}
   </nav>
   <div class='header-actions'>
-    <a class='language-link' href={pagePath(otherLocale, activeSection)}
+    <a class='language-link' href={alternatePath ?? pagePath(otherLocale, activeSection)}
       lang={otherLocale === 'zh' ? 'zh-CN' : 'en'} hreflang={otherLocale === 'zh' ? 'zh-CN' : 'en'}
       aria-label={locale === 'zh' ? 'Switch to English' : '切换到中文版'}
     >{locale === 'zh' ? 'EN' : '中文'}</a>
@@ -51,7 +51,7 @@ const otherLocale: Locale = locale === 'zh' ? 'en' : 'zh'
       })
       this.querySelector('.theme-button')?.addEventListener('click', () => {
         const dark = document.documentElement.classList.toggle('dark')
-        localStorage.setItem('theme', dark ? 'dark' : 'light')
+        try { localStorage.setItem('theme', dark ? 'dark' : 'light') } catch {}
       })
     }
   }

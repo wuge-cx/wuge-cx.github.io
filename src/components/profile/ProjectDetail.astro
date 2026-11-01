@@ -1,0 +1,115 @@
+---
+import ProfileLayout from '@/layouts/ProfileLayout.astro'
+import { pagePath, projectPath, profile, text, type Locale, type Project } from '../../data/profile'
+interface Props { locale: Locale; project: Project }
+const { locale, project } = Astro.props
+const otherProject = profile.projects.find((entry) => entry.slug !== project.slug)
+const labels = locale === 'zh'
+  ? { back: '返回项目经历', overview: '项目背景', results: '主要成果', workflow: '技术流程', contributions: '工作与贡献', role: '我的职责', next: '继续了解另一个项目', toc: '本页目录' }
+  : { back: 'Back to projects', overview: 'Project background', results: 'Key results', workflow: 'Technical workflow', contributions: 'Work and contributions', role: 'My role', next: 'Explore another project', toc: 'On this page' }
+const toc = [
+  { id: 'overview', label: labels.overview }, { id: 'results', label: labels.results },
+  { id: 'workflow', label: labels.workflow }, { id: 'contributions', label: labels.contributions }
+]
+---
+
+<ProfileLayout {locale} section='projects' pageTitle={text(project.title, locale)} pageDescription={text(project.summary, locale)} projectSlug={project.slug}>
+  <main id='main-content' data-project={project.slug}>
+    <a class='back-link' href={pagePath(locale, 'projects')}><span aria-hidden='true'>‹</span> {labels.back}</a>
+    <header class='project-heading'>
+      <p class='project-date'>{text(project.dates, locale)}</p>
+      <h1>{text(project.title, locale)}</h1>
+      <p class='project-summary'>{text(project.summary, locale)}</p>
+      <ul class='stack' aria-label={locale === 'zh' ? '技术与方法' : 'Tools and methods'}>{project.stack.map((item) => <li>{item}</li>)}</ul>
+    </header>
+    <div class='detail-grid'>
+      <div class='detail-content'>
+        <section id='overview'>
+          <h2>{labels.overview}</h2>
+          <p>{text(project.description, locale)}</p>
+          <div class='role'><h3>{labels.role}</h3><p>{text(project.role, locale)}</p></div>
+        </section>
+        <section id='results'>
+          <h2>{labels.results}</h2>
+          <dl class='metric-grid'>
+            {project.metrics.map((metric) => <div class='metric'>
+              <dt>{text(metric.label, locale)}</dt>
+              <dd class='metric-value'>{metric.value}</dd>
+              <dd class='metric-note'>{text(metric.note, locale)}</dd>
+            </div>)}
+          </dl>
+        </section>
+        <section id='workflow'>
+          <h2>{labels.workflow}</h2>
+          <ol class='workflow'>
+            {project.workflow.map((step, index) => <li>
+              <span class='step-number' aria-hidden='true'>{String(index + 1).padStart(2, '0')}</span>
+              <div><h3>{text(step.title, locale)}</h3><p>{text(step.description, locale)}</p></div>
+            </li>)}
+          </ol>
+        </section>
+        <section id='contributions'>
+          <h2>{labels.contributions}</h2>
+          <ol class='contributions'>
+            {project.highlights.map((highlight, index) => <li>
+              <span class='contribution-number' aria-hidden='true'>{String(index + 1).padStart(2, '0')}</span>
+              <div><h3>{text(highlight.title, locale)}</h3><p>{text(highlight.description, locale)}</p></div>
+            </li>)}
+          </ol>
+          {project.links.length > 0 && <div class='project-links'>{project.links.map((link) => <a href={link.href} target='_blank' rel='noopener noreferrer'>{text(link.label, locale)} ↗</a>)}</div>}
+        </section>
+        {otherProject && <a class='next-project' href={projectPath(locale, otherProject.slug)}>
+          <span>{labels.next} <span aria-hidden='true'>→</span></span><strong>{text(otherProject.title, locale)}</strong>
+        </a>}
+      </div>
+      <aside class='detail-toc'><h2>{labels.toc}</h2><nav aria-label={labels.toc}>{toc.map((item) => <a href={'#' + item.id}>{item.label}</a>)}</nav></aside>
+    </div>
+  </main>
+</ProfileLayout>
+
+<style>
+  main { padding-block: 1.5rem 5rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.35rem 0.7rem; border: 1px solid hsl(var(--border)); border-radius: 0.5rem; background: hsl(var(--muted) / 0.6); color: hsl(var(--muted-foreground)); font-size: 0.82rem; }
+  .back-link:hover { color: hsl(var(--primary)); }
+  .project-heading { max-width: 51rem; padding-block: 2.5rem; border-bottom: 1px solid hsl(var(--border)); }
+  .project-date { color: hsl(var(--primary)); font-size: 0.8rem; letter-spacing: 0.03em; }
+  h1 { margin-top: 0.85rem; font-size: clamp(1.75rem, 3.1vw, 2.4rem); line-height: 1.5; font-weight: 600; letter-spacing: -0.025em; text-wrap: pretty; }
+  .project-summary { margin-top: 1rem; color: hsl(var(--muted-foreground)); font-size: 1rem; line-height: 1.85; }
+  .stack { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.4rem; }
+  .stack li { padding: 0.3rem 0.6rem; border: 1px solid hsl(var(--border)); border-radius: 0.45rem; font-size: 0.74rem; color: hsl(var(--primary)); }
+  .detail-grid { display: grid; grid-template-columns: minmax(0, 1fr) 12rem; gap: 3rem; margin-top: 2.5rem; align-items: start; }
+  .detail-content { min-width: 0; }
+  section { margin-bottom: 3rem; scroll-margin-top: 7rem; }
+  section > h2 { margin-bottom: 1.25rem; font-size: 1.35rem; font-weight: 600; }
+  section p { color: hsl(var(--muted-foreground)); font-size: 0.94rem; line-height: 1.95; overflow-wrap: anywhere; }
+  .role { margin-top: 1.5rem; padding: 1rem 1.2rem; border-left: 2px solid hsl(var(--primary) / 0.5); border-radius: 0 0.75rem 0.75rem 0; background: hsl(var(--primary) / 0.045); }
+  .role h3 { margin-bottom: 0.4rem; font-size: 0.85rem; font-weight: 500; }
+  .role p { font-size: 0.87rem; }
+  .metric-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .metric { padding: 1.1rem; border: 1px solid hsl(var(--border)); border-radius: 0.85rem; background: linear-gradient(145deg, hsl(var(--primary) / 0.045), transparent); }
+  .metric dt { font-size: 0.75rem; line-height: 1.6; }
+  .metric-value { margin-top: 0.65rem; color: hsl(var(--primary)); font-size: 1.05rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .metric-note { margin-top: 0.65rem; color: hsl(var(--muted-foreground)); font-size: 0.73rem; line-height: 1.75; }
+  .workflow { display: grid; gap: 0; }
+  .workflow li { position: relative; display: flex; gap: 1rem; padding-bottom: 1.3rem; }
+  .workflow li:last-child { padding-bottom: 0; }
+  .workflow li:not(:last-child)::after { content: ''; position: absolute; top: 2rem; bottom: 0; left: 1rem; border-left: 1px solid hsl(var(--border)); }
+  .step-number { flex-shrink: 0; display: grid; place-items: center; width: 2rem; height: 2rem; font-family: ui-monospace, monospace; font-size: 0.7rem; border: 1px solid hsl(var(--primary) / 0.3); border-radius: 50%; color: hsl(var(--primary)); background: hsl(var(--background)); }
+  .workflow h3 { padding-top: 0.15rem; font-size: 0.94rem; font-weight: 500; }
+  .workflow p { margin-top: 0.25rem; font-size: 0.85rem; }
+  .contributions { display: grid; gap: 1.5rem; }
+  .contributions li { display: grid; grid-template-columns: 1.8rem minmax(0, 1fr); gap: 0.7rem; padding-bottom: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
+  .contribution-number { font-family: ui-monospace, monospace; font-size: 0.8rem; color: hsl(var(--primary)); padding-top: 0.2rem; }
+  .contributions h3 { margin-bottom: 0.6rem; font-size: 1rem; font-weight: 600; line-height: 1.7; }
+  .project-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; color: hsl(var(--primary)); }
+  .next-project { display: grid; gap: 0.6rem; padding: 1.4rem; border: 1px solid hsl(var(--border)); border-radius: 0.9rem; background: hsl(var(--muted) / 0.35); }
+  .next-project > span { display: flex; justify-content: space-between; font-size: 0.75rem; color: hsl(var(--primary)); }
+  .next-project strong { font-size: 0.95rem; line-height: 1.8; font-weight: 500; }
+  .next-project:hover { border-color: hsl(var(--primary) / 0.5); }
+  .detail-toc { position: sticky; top: 7rem; }
+  .detail-toc h2 { font-size: 0.85rem; margin-bottom: 1rem; }
+  .detail-toc nav { display: grid; gap: 0.4rem; border-left: 1px solid hsl(var(--primary) / 0.4); }
+  .detail-toc a { padding: 0.65rem 0.9rem; margin-left: 0.5rem; border-radius: 0.65rem; background: hsl(var(--muted) / 0.5); color: hsl(var(--primary)); font-size: 0.8rem; }
+  @media (max-width: 900px) { .detail-grid { grid-template-columns: minmax(0, 1fr); } .detail-toc { display: none; } }
+  @media (max-width: 640px) { main { padding-block: 1rem 3rem; } .project-heading { padding-block: 2rem; } .metric-grid { grid-template-columns: 1fr; } .metric { padding: 1.2rem; } .metric-value { font-size: 1.5rem; } .contributions li { grid-template-columns: 1.4rem minmax(0, 1fr); gap: 0.5rem; } }
+</style>
